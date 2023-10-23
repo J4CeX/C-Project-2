@@ -3,10 +3,14 @@
 #include<cstring>
 #include<cstdlib>
 #include<ctime>
+#include<chrono>
 #include<vector>
 #include<cmath>
+#include<iomanip>
 
 using namespace std;
+
+typedef std::chrono::high_resolution_clock Clock;
 
 struct data
 {
@@ -22,18 +26,19 @@ struct sort
 	string time;
 };
 
-void mergeSort();
-void quickSort();
-void bucketSort();
-void bubbleSort();
-void insertSort();
+void mergeSort(data, vector<sort> &);
+void quickSort(data, vector<sort> &);
+void bucketSort(data, vector<sort> &);
+void bubbleSort(data, vector<sort> &);
+void insertSort(data, vector<sort> &);
 void setData(vector<data> &, vector<sort> &);
 void show(vector<data> &, vector<sort> &);
 void showData(vector<data> &, int);
-void showSort(vector<sort> &, int);
+void showSort(vector<sort> &, int, int);
 void generateData();
 int convertStringToInt(string);
 void addData(vector<data> &);
+void sortData(vector<data> &, vector<sort> &);
 
 int main()
 {
@@ -70,7 +75,7 @@ int main()
 				addData(dataBase);
 				break;
 			case 3:
-				
+				sortData(dataBase, sortBase);
 				break;
 			case 4:
 				
@@ -205,7 +210,7 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 				showData(dataBase, index);
 				break;	
 			case 2:
-				showSort(sortBase, index);
+				showSort(sortBase, index, dataBase[index].id);
 				break;
 			default:
 				system("CLS");
@@ -231,14 +236,25 @@ void showData(vector<data> &dataBase, int index)
 	}
 	system("pause");
 }
-void showSort(vector<sort> &sortBase, int index)
+
+void showSort(vector<sort> &sortBase, int index, int id)
 {
+	int n = 0;
 	system("CLS");
 	cout<<"===================="<<endl
 		<<"Wyswietlanie zestawu"<<endl
 		<<"===================="<<endl;
 	cout<<"Zestaw nr "<<index<<", wyniki sortowan: "<<endl;
-	//
+	for(int i = 0; i < sortBase.size(); i++)
+	{
+		if(id == sortBase[i].id)
+		{
+			cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<sortBase[i].time<<endl;
+			n++;
+		}
+	}
+	if(n == 0)
+		cout<<"Brak sortowan"<<endl;
 	system("pause");
 }
 
@@ -251,7 +267,7 @@ void generateData()
 	for(int i = 1; i <= 5; i++)
 	{
 		file<<"{"<<endl;
-		int size = rand()%91+10;
+		int size = rand()%100+901;
 		for(int index = 0; index < size; index++)
 		{
 			file<<rand()%101<<endl;
@@ -317,27 +333,145 @@ void addData(vector<data> &dataBase)
 	file.close();
 }
 
-void mergeSort()
+void sortData(vector<data> &dataBase, vector<sort> &sortBase)
+{
+	int index;
+	int option;
+	system("CLS");
+	cout<<"=============="<<endl
+		<<"Panel sortowan"<<endl
+		<<"=============="<<endl;
+	cout<<"Wybierz zestaw:"<<endl;
+	for(int i = 1; i <= dataBase.size(); i++)
+	{
+		cout<<"Nr "<<i<<"."<<endl;
+	}
+	cout<<"-> "; cin>>index;
+	--index;
+	
+	system("CLS");
+	cout<<"=============="<<endl
+		<<"Panel sortowan"<<endl
+		<<"=============="<<endl;
+	cout<<"Wybierz rodzaj sortowania:"<<endl
+		<<"1. mergeSort"<<endl
+		<<"2. quickSort"<<endl
+		<<"3. bucketSort"<<endl
+		<<"4. bubbleSort"<<endl
+		<<"5. insertSort"<<endl
+		<<"-> "; cin>>option;
+		
+	switch(option)
+	{
+		case 1:
+		{
+			auto start = Clock::now();
+			mergeSort(dataBase[index], sortBase);
+			auto end = Clock::now();
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			if(seconds >= 1)
+				cout<<seconds<<" sekund"<<endl;
+			else
+				cout<<miliseconds<<" milisekund"<<endl;
+			break;
+		}
+		case 2:
+		{
+			auto start = Clock::now();
+			quickSort(dataBase[index], sortBase);
+			auto end = Clock::now();
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			if(seconds >= 1)
+				cout<<seconds<<" sekund"<<endl;
+			else
+				cout<<miliseconds<<" milisekund"<<endl;
+			break;
+		}
+		case 3:
+		{
+			auto start = Clock::now();
+			bucketSort(dataBase[index], sortBase);
+			auto end = Clock::now();
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			if(seconds >= 1)
+				cout<<seconds<<" sekund"<<endl;
+			else
+				cout<<miliseconds<<" milisekund"<<endl;
+			break;
+		}
+		case 4:
+		{	
+			auto start = Clock::now();
+			bubbleSort(dataBase[index], sortBase);
+			auto end = Clock::now();
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			if(seconds >= 1)
+				cout<<seconds<<" sekund"<<endl;
+			else
+				cout<<miliseconds<<" milisekund"<<endl;
+			break;
+		}
+		case 5:
+		{
+			auto start = Clock::now();
+			insertSort(dataBase[index], sortBase);
+			auto end = Clock::now();
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			if(seconds >= 1)
+				cout<<seconds<<" sekund"<<endl;
+			else
+				cout<<miliseconds<<" milisekund"<<endl;
+			break;
+		}
+		default:
+		{
+			system("CLS");
+			cout<<"===================="<<endl
+				<<"\aNie ma takiej opcji!"<<endl
+				<<"===================="<<endl;
+			system("pause");
+		}
+	}
+	system("pause");
+}
+
+void mergeSort(data currentData, vector<sort> &sortBase)
 {
 	
 }
 
-void quickSort()
+void quickSort(data currentData, vector<sort> &sortBase)
 {
 	
 }
 
-void bucketSort()
+void bucketSort(data currentData, vector<sort> &sortBase)
 {
 	
 }
 
-void bubbleSort()
+void bubbleSort(data currentData, vector<sort> &sortBase)
 {
-	
+	for(int i = 0; i < currentData.size; i++)
+	{
+		for(int j = 0; j < currentData.size-i-1; j++)
+		{
+			if(currentData.numbers[j] > currentData.numbers[j+1])
+			{
+				int x = currentData.numbers[j+1];
+				currentData.numbers[j+1] = currentData.numbers[j];
+				currentData.numbers[j] = x;
+			}
+		}
+	}
 }
 
-void insertSort()
+void insertSort(data currentData, vector<sort> &sortBase)
 {
 	
 }
