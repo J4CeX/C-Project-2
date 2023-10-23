@@ -11,6 +11,7 @@
 using namespace std;
 
 typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::time_point<std::chrono::system_clock> Clock_val;
 
 struct data
 {
@@ -31,7 +32,8 @@ void quickSort(data, vector<sort> &);
 void bucketSort(data, vector<sort> &);
 void bubbleSort(data, vector<sort> &);
 void insertSort(data, vector<sort> &);
-void setData(vector<data> &, vector<sort> &);
+void setData(vector<data> &);
+void setSort(vector<sort> &);
 void show(vector<data> &, vector<sort> &);
 void showData(vector<data> &, int);
 void showSort(vector<sort> &, int, int);
@@ -39,6 +41,7 @@ void generateData();
 int convertStringToInt(string);
 void addData(vector<data> &);
 void sortData(vector<data> &, vector<sort> &);
+void error();
 
 int main()
 {
@@ -48,7 +51,8 @@ int main()
 	int option;	
 	while(true)
 	{
-		setData(dataBase, sortBase);
+		setData(dataBase);
+		setSort(sortBase);
 		system("CLS");
 		cout<<"=============================="<<endl
 			<<"Witaj w kalkulatorze sortowan!"<<endl
@@ -93,11 +97,12 @@ int main()
 	return 0;
 }
 
-void setData(vector<data> &dataBase, vector<sort> &sortBase)
+void setData(vector<data> &dataBase)
 {
 	dataBase.clear();
 	ifstream file;
 	file.open("data.txt");
+	
 	if(!file.good())
 	{
 		file.close();
@@ -124,11 +129,12 @@ void setData(vector<data> &dataBase, vector<sort> &sortBase)
 		
 		file.open("data.txt");
 	}
+	
 	string line;
 
 	while(!file.eof())
 	{
-		int id = 1;
+		int id = 0;
 		getline(file, line);
 		if(line == "")
 		{
@@ -152,8 +158,15 @@ void setData(vector<data> &dataBase, vector<sort> &sortBase)
 	}
 	
 	file.close();
-	
+}
+
+void setSort(vector<sort> &sortBase)
+{
+	sortBase.clear();
+	string line;
+	ifstream file;
 	file.open("sort.txt");
+	
 	while(!file.eof())
 	{
 		getline(file, line);
@@ -161,17 +174,20 @@ void setData(vector<data> &dataBase, vector<sort> &sortBase)
 		{
 			continue;
 		}
-		if(line == "{");
+		if(line == "{")
 		{
-			string line = "";
 			sort newSort;
 			getline(file, line);
 			newSort.id = convertStringToInt(line);
-			getline(file, newSort.time);
-			getline(file, newSort.type);
+			getline(file, line);
+			newSort.type = line;
+			getline(file, line);
+			newSort.time = line;
 			sortBase.push_back(newSort);
 		}
 	}
+	
+	file.close();
 }
 
 void show(vector<data> &dataBase, vector<sort> &sortBase)
@@ -213,11 +229,7 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 				showSort(sortBase, index, dataBase[index].id);
 				break;
 			default:
-				system("CLS");
-				cout<<"===================="<<endl
-					<<"\aNie ma takiej opcji!"<<endl
-					<<"===================="<<endl;
-				system("pause");
+				error();
 				continue;
 		}
 	}
@@ -230,9 +242,9 @@ void showData(vector<data> &dataBase, int index)
 		<<"Wyswietlanie zestawu"<<endl
 		<<"===================="<<endl;
 	cout<<"Zestaw nr "<<index<<", dane: "<<endl;
-	for(int i = 0; i < dataBase[index-1].numbers.size(); i++)
+	for(int i = 0; i < dataBase[index].numbers.size(); i++)
 	{
-		cout<<dataBase[index-1].numbers[i]<<endl;
+		cout<<dataBase[index].numbers[i]<<endl;
 	}
 	system("pause");
 }
@@ -337,6 +349,10 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 {
 	int index;
 	int option;
+	sort newSort;
+	ofstream file;
+	file.open("sort.txt", ios::app);
+	
 	system("CLS");
 	cout<<"=============="<<endl
 		<<"Panel sortowan"<<endl
@@ -349,6 +365,8 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 	cout<<"-> "; cin>>index;
 	--index;
 	
+	newSort.id = index;
+	
 	system("CLS");
 	cout<<"=============="<<endl
 		<<"Panel sortowan"<<endl
@@ -360,83 +378,84 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		<<"4. bubbleSort"<<endl
 		<<"5. insertSort"<<endl
 		<<"-> "; cin>>option;
-		
+	
+	Clock_val start, end;
+	
 	switch(option)
 	{
 		case 1:
 		{
-			auto start = Clock::now();
+			newSort.type = "mergeSort";
+			start = Clock::now();
 			mergeSort(dataBase[index], sortBase);
-			auto end = Clock::now();
-			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			if(seconds >= 1)
-				cout<<seconds<<" sekund"<<endl;
-			else
-				cout<<miliseconds<<" milisekund"<<endl;
+			end = Clock::now();
 			break;
 		}
 		case 2:
 		{
-			auto start = Clock::now();
+			newSort.type = "quickSort";
+			start = Clock::now();
 			quickSort(dataBase[index], sortBase);
-			auto end = Clock::now();
-			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			if(seconds >= 1)
-				cout<<seconds<<" sekund"<<endl;
-			else
-				cout<<miliseconds<<" milisekund"<<endl;
+			end = Clock::now();
 			break;
 		}
 		case 3:
 		{
-			auto start = Clock::now();
+			newSort.type = "bucketSort";
+			start = Clock::now();
 			bucketSort(dataBase[index], sortBase);
-			auto end = Clock::now();
-			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			if(seconds >= 1)
-				cout<<seconds<<" sekund"<<endl;
-			else
-				cout<<miliseconds<<" milisekund"<<endl;
+			end = Clock::now();
 			break;
 		}
 		case 4:
 		{	
-			auto start = Clock::now();
+			newSort.type = "bubbleSort";
+			start = Clock::now();
 			bubbleSort(dataBase[index], sortBase);
-			auto end = Clock::now();
-			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			if(seconds >= 1)
-				cout<<seconds<<" sekund"<<endl;
-			else
-				cout<<miliseconds<<" milisekund"<<endl;
+			end = Clock::now();
 			break;
 		}
 		case 5:
 		{
-			auto start = Clock::now();
+			newSort.type = "insertSort";
+			start = Clock::now();
 			insertSort(dataBase[index], sortBase);
-			auto end = Clock::now();
-			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			if(seconds >= 1)
-				cout<<seconds<<" sekund"<<endl;
-			else
-				cout<<miliseconds<<" milisekund"<<endl;
+			end = Clock::now();
 			break;
 		}
 		default:
-		{
-			system("CLS");
-			cout<<"===================="<<endl
-				<<"\aNie ma takiej opcji!"<<endl
-				<<"===================="<<endl;
-			system("pause");
-		}
+			error();
 	}
+	
+	system("CLS");
+	cout<<"=============="<<endl
+		<<"Panel sortowan"<<endl
+		<<"=============="<<endl;
+
+	auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+	auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+	if(seconds >= 1)
+	{
+		newSort.time = to_string(seconds);
+		newSort.time += " sekund";
+		cout<<"Czas sortowania "<<newSort.type<<": "<<seconds<<" sekund"<<endl;
+	}
+	else
+	{
+		newSort.time = to_string(miliseconds);
+		newSort.time += " milisekund";
+		cout<<"Czas sortowania "<<newSort.type<<": "<<miliseconds<<" milisekund"<<endl;
+	}
+
+	sortBase.push_back(newSort);
+	
+	file<<"{"<<endl
+		<<newSort.id<<endl
+		<<newSort.type<<endl
+		<<newSort.time<<endl
+		<<"}"<<endl;
+		
+	file.close();
 	system("pause");
 }
 
@@ -474,4 +493,13 @@ void bubbleSort(data currentData, vector<sort> &sortBase)
 void insertSort(data currentData, vector<sort> &sortBase)
 {
 	
+}
+
+void error()
+{
+	system("CLS");
+	cout<<"===================="<<endl
+		<<"\aNie ma takiej opcji!"<<endl
+		<<"===================="<<endl;
+	system("pause");
 }

@@ -1,0 +1,10 @@
+{
+0
+bubbleSort
+2.056000 milisekund
+}
+{
+0
+bubbleSort
+1.998000 milisekund
+}
