@@ -29,7 +29,7 @@ struct sort
 
 void mergeSort(data, vector<sort> &);
 void quickSort(int *, int, int);
-void bucketSort(data, vector<sort> &);
+void bucketSort(int *, int);
 void bubbleSort(int *, int);
 void insertSort(data, vector<sort> &);
 void setData(vector<data> &);
@@ -410,7 +410,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		{
 			newSort.type = "bucketSort";
 			start = Clock::now();
-			bucketSort(dataBase[index], sortBase);
+			bucketSort(tab, size);
 			end = Clock::now();
 			break;
 		}
@@ -433,6 +433,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		default:
 			error();
 	}
+	
 	delete [] tab;
 	
 	system("CLS");
@@ -496,9 +497,43 @@ void quickSort(int *tab, int left, int right)
 	if(j > left) quickSort(tab, left, j);
 }
 
-void bucketSort(data currentData, vector<sort> &sortBase)
+void bucketSort(int *tab, int size)
 {
+	int max = 0;
+	for(int i = 0; i < size; i++)
+	{
+		if(tab[i] > max)
+			max = tab[i];
+	}
 	
+	int buckets[max+1];
+	
+	for(int i = 0; i <= max; i++)
+		buckets[i] = 0;
+	
+	for(int i = 0; i < size; i++)
+		buckets[tab[i]]++;
+	
+	for(int i = 0; i < size; i++)
+		tab[i] = 0;
+	
+	int index = 0;
+	for(int i = 0; i <= max; i++)
+	{
+		if(buckets[i] > 0)
+		{
+			for(int j = 0; j < buckets[i]; j++)
+			{
+				tab[index] = i;
+				index++;
+			}
+		}
+	}
+	for(int i = 0; i<size; i++)
+	{
+		cout<<tab[i]<<endl;
+	}
+	system("pause");
 }
 
 void bubbleSort(int *tab, int size)
