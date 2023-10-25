@@ -28,9 +28,9 @@ struct sort
 };
 
 void mergeSort(data, vector<sort> &);
-void quickSort(data, vector<sort> &);
+void quickSort(int *, int, int);
 void bucketSort(data, vector<sort> &);
-void bubbleSort(data, vector<sort> &);
+void bubbleSort(int *, int);
 void insertSort(data, vector<sort> &);
 void setData(vector<data> &);
 void setSort(vector<sort> &);
@@ -381,6 +381,13 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 	
 	Clock_val start, end;
 	
+	int size = dataBase[index].size;
+	int *tab = new int [size];
+	for(int i = 0; i < size; i++)
+	{
+		tab[i] = dataBase[index].numbers[i];
+	}
+	
 	switch(option)
 	{
 		case 1:
@@ -395,7 +402,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		{
 			newSort.type = "quickSort";
 			start = Clock::now();
-			quickSort(dataBase[index], sortBase);
+			quickSort(tab, 0, size-1);
 			end = Clock::now();
 			break;
 		}
@@ -411,7 +418,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		{	
 			newSort.type = "bubbleSort";
 			start = Clock::now();
-			bubbleSort(dataBase[index], sortBase);
+			bubbleSort(tab, size);
 			end = Clock::now();
 			break;
 		}
@@ -426,6 +433,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		default:
 			error();
 	}
+	delete [] tab;
 	
 	system("CLS");
 	cout<<"=============="<<endl
@@ -464,9 +472,28 @@ void mergeSort(data currentData, vector<sort> &sortBase)
 	
 }
 
-void quickSort(data currentData, vector<sort> &sortBase)
+void quickSort(int *tab, int left, int right)
 {
-	
+	int i = left;
+	int j = right;
+	int v = tab[(left+right)/2];
+	int x;
+	do
+	{
+		while(tab[i] < v) i++;
+		while(tab[j] > v) j--;
+		if(i <= j)
+		{
+			x = tab[i];
+			tab[i] = tab[j];
+			tab[j] = x;
+			i++;
+			j--;
+		}
+	}
+	while(i <= j);
+	if(i < right) quickSort(tab, i, right);
+	if(j > left) quickSort(tab, left, j);
 }
 
 void bucketSort(data currentData, vector<sort> &sortBase)
@@ -474,17 +501,17 @@ void bucketSort(data currentData, vector<sort> &sortBase)
 	
 }
 
-void bubbleSort(data currentData, vector<sort> &sortBase)
+void bubbleSort(int *tab, int size)
 {
-	for(int i = 0; i < currentData.size; i++)
+	for(int i = 0; i < size; i++)
 	{
-		for(int j = 0; j < currentData.size-i-1; j++)
+		for(int j = 0; j < size-i-1; j++)
 		{
-			if(currentData.numbers[j] > currentData.numbers[j+1])
+			if(tab[j] > tab[j+1])
 			{
-				int x = currentData.numbers[j+1];
-				currentData.numbers[j+1] = currentData.numbers[j];
-				currentData.numbers[j] = x;
+				int x = tab[j+1];
+				tab[j+1] = tab[j];
+				tab[j] = x;
 			}
 		}
 	}

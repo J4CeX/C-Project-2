@@ -1,10 +1,16 @@
+
 {
-0
-bubbleSort
-2.056000 milisekund
+2
+quickSort
+0.000000 milisekund
 }
 {
-0
-bubbleSort
-1.998000 milisekund
+4
+quickSort
+0.000000 milisekund
+}
+{
+3
+quickSort
+0.000000 milisekund
 }
