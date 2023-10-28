@@ -27,7 +27,8 @@ struct sort
 	string time;
 };
 
-void mergeSort(int *, int);
+void mergeSort(int *,int, int, int *);
+void merge(int *, int, int, int, int *);
 void quickSort(int *, int, int);
 void bucketSort(int *, int);
 void bubbleSort(int *, int);
@@ -151,6 +152,7 @@ void setData(vector<data> &dataBase)
 				size++;
 				newData.numbers.push_back(convertStringToInt(line));
 				getline(file, line);
+				if(line == "}") size++;
 			}
 			newData.size = size;
 			dataBase.push_back(newData);
@@ -329,7 +331,7 @@ void addData(vector<data> &dataBase)
 		continue;
 	dataBase.push_back(newData);
 	
-	file<<"{"<<endl;
+	file<<endl<<"{"<<endl;
 	for(int index = 0; index < newData.numbers.size(); index++)
 	{
 		file<<newData.numbers[index]<<endl;
@@ -388,13 +390,17 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		tab[i] = dataBase[index].numbers[i];
 	}
 	
+	cout<<size;
+	system("pause");
+	
 	switch(option)
 	{
 		case 1:
 		{
 			newSort.type = "mergeSort";
+			int supTab[size];
 			start = Clock::now();
-			mergeSort(tab, size);
+			mergeSort(tab, 0, size-1, supTab);
 			end = Clock::now();
 			break;
 		}
@@ -468,9 +474,49 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 	system("pause");
 }
 
-void mergeSort(int *tab, int size)
+void mergeSort(int *tab, int leftIndex, int rightIndex, int *supTab)
 {
+	if(leftIndex != rightIndex)
+	{
+		int pivot = (leftIndex + rightIndex) / 2;
+		mergeSort(tab, leftIndex, pivot, supTab);
+		mergeSort(tab, pivot + 1, rightIndex, supTab);
+		merge(tab, leftIndex, pivot, rightIndex, supTab);
+	}
+}
+
+void merge(int *tab, int leftIndex, int pivot, int rightIndex, int *supTab)
+{
+	for(int i = 0; i<= rightIndex; i++)
+	{
+		supTab[i] = tab[i];
+	}
 	
+	int leftSideIndex = leftIndex;
+	int rightSideIndex = pivot + 1;
+	int index = leftIndex;
+	
+	while(leftSideIndex <= pivot && rightSideIndex <= rightIndex)
+	{
+		if(supTab[leftSideIndex] <= supTab[rightSideIndex])
+		{
+			tab[index] = supTab[leftSideIndex];
+			leftSideIndex++;
+		}
+		else
+		{
+			tab[index] = supTab[rightSideIndex];
+			rightSideIndex++;
+		}
+		index++;
+	}
+	
+	while(leftSideIndex <= pivot)
+	{
+		tab[index] = supTab[leftSideIndex];
+		index++;
+		leftSideIndex++;
+	}
 }
 
 void quickSort(int *tab, int left, int right)
@@ -565,7 +611,7 @@ void insertSort(int *tab, int size)
 		}
 		pivot++;
 	}
-	while(pivot < size)
+	while(pivot < size);
 }
 
 void error()

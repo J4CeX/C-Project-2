@@ -1,1 +1,136 @@
 
+{
+1
+insertSort
+0.870000 milisekund
+}
+{
+3
+bucketSort
+0.000000 milisekund
+}
+{
+2
+bubbleSort
+0.996000 milisekund
+}
+{
+2
+bucketSort
+0.000000 milisekund
+}
+{
+2
+quickSort
+0.000000 milisekund
+}
+{
+4
+quickSort
+0.000000 milisekund
+}
+{
+3
+insertSort
+0.997000 milisekund
+}
+{
+4
+bubbleSort
+0.996000 milisekund
+}
+{
+4
+quickSort
+0.000000 milisekund
+}
+{
+1
+bucketSort
+0.000000 milisekund
+}
+{
+0
+mergeSort
+0.000000 milisekund
+}
+{
+0
+quickSort
+0.000000 milisekund
+}
+{
+0
+quickSort
+0.000000 milisekund
+}
+{
+3
+bubbleSort
+1.002000 milisekund
+}
+{
+0
+mergeSort
+0.000000 milisekund
+}
+{
+3
+bubbleSort
+1.001000 milisekund
+}
+{
+3
+bubbleSort
+1.021000 milisekund
+}
+{
+3
+bubbleSort
+1.000000 milisekund
+}
+{
+2
+bubbleSort
+1.002000 milisekund
+}
+{
+2
+bubbleSort
+1.023000 milisekund
+}
+{
+1
+quickSort
+0.000000 milisekund
+}
+{
+0
+mergeSort
+0.000000 milisekund
+}
+{
+2
+bubbleSort
+0.998000 milisekund
+}
+{
+0
+bucketSort
+0.000000 milisekund
+}
+{
+1
+bucketSort
+0.000000 milisekund
+}
+{
+0
+bucketSort
+0.000000 milisekund
+}
+{
+0
+mergeSort
+0.000000 milisekund
+}
