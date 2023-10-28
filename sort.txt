@@ -1,16 +1,1 @@
 
-{
-2
-quickSort
-0.000000 milisekund
-}
-{
-4
-quickSort
-0.000000 milisekund
-}
-{
-3
-quickSort
-0.000000 milisekund
-}
