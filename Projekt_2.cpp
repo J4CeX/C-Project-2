@@ -390,9 +390,6 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		tab[i] = dataBase[index].numbers[i];
 	}
 	
-	cout<<size;
-	system("pause");
-	
 	switch(option)
 	{
 		case 1:
