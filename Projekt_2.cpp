@@ -27,11 +27,11 @@ struct sort
 	string time;
 };
 
-void mergeSort(data, vector<sort> &);
+void mergeSort(int *, int);
 void quickSort(int *, int, int);
 void bucketSort(int *, int);
 void bubbleSort(int *, int);
-void insertSort(data, vector<sort> &);
+void insertSort(int *, int);
 void setData(vector<data> &);
 void setSort(vector<sort> &);
 void show(vector<data> &, vector<sort> &);
@@ -394,7 +394,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		{
 			newSort.type = "mergeSort";
 			start = Clock::now();
-			mergeSort(dataBase[index], sortBase);
+			mergeSort(tab, size);
 			end = Clock::now();
 			break;
 		}
@@ -426,7 +426,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		{
 			newSort.type = "insertSort";
 			start = Clock::now();
-			insertSort(dataBase[index], sortBase);
+			insertSort(tab, size);
 			end = Clock::now();
 			break;
 		}
@@ -468,7 +468,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 	system("pause");
 }
 
-void mergeSort(data currentData, vector<sort> &sortBase)
+void mergeSort(int *tab, int size)
 {
 	
 }
@@ -529,11 +529,6 @@ void bucketSort(int *tab, int size)
 			}
 		}
 	}
-	for(int i = 0; i<size; i++)
-	{
-		cout<<tab[i]<<endl;
-	}
-	system("pause");
 }
 
 void bubbleSort(int *tab, int size)
@@ -552,9 +547,25 @@ void bubbleSort(int *tab, int size)
 	}
 }
 
-void insertSort(data currentData, vector<sort> &sortBase)
+void insertSort(int *tab, int size)
 {
+	int pivot = 1;
+	int x;
 	
+	do
+	{
+		if(tab[pivot] < tab[pivot-1])
+		{
+			for(int i = pivot; i > 0; i--)
+			{
+				x = tab[i];
+				tab[i] = tab[i-1];
+				tab[i-1] = x;
+			}
+		}
+		pivot++;
+	}
+	while(pivot < size)
 }
 
 void error()
