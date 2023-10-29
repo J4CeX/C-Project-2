@@ -7,6 +7,7 @@
 #include<vector>
 #include<cmath>
 #include<iomanip>
+#include<cstdio>
 
 using namespace std;
 
@@ -195,8 +196,8 @@ void setSort(vector<sort> &sortBase)
 			getline(file, line);
 			newSort.type = line;
 			getline(file, line);
-			newSort.time = stod(line);
-			sortBase.push_back(newSort);
+			newSort.time = stod(line);	
+			sortBase.push_back(newSort);	
 		}
 	}
 	
@@ -239,7 +240,7 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 				showData(dataBase, index);
 				break;	
 			case 2:
-				showSort(sortBase, index, dataBase[index].id);
+				showSort(sortBase, index, index-1);
 				break;
 			default:
 				error();
@@ -410,10 +411,11 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		case 1:
 		{
 			newSort.type = "mergeSort";
-			int supTab[size];
+			int *supTab = new int [size];
 			start = Clock::now();
 			mergeSort(tab, 0, size-1, supTab);
 			end = Clock::now();
+			delete [] supTab;
 			break;
 		}
 		case 2:
@@ -574,11 +576,11 @@ void bucketSort(int *tab, int size)
 			max = tab[i];
 	}
 	
-	int buckets[max+1];
+	int *buckets = new int [max+1];
 	
 	for(int i = 0; i <= max; i++)
 		buckets[i] = 0;
-	
+	                
 	for(int i = 0; i < size; i++)
 		buckets[tab[i]]++;
 	
@@ -597,6 +599,8 @@ void bucketSort(int *tab, int size)
 			}
 		}
 	}
+	
+	delete [] buckets;
 }
 
 void bubbleSort(int *tab, int size)
@@ -639,17 +643,18 @@ void insertSort(int *tab, int size)
 void showRankingList(vector<sort> &sortBase)
 {
 	int size = sortBase.size();
-	double tab[size];
+	double *tab = new double [size];
 	
 	for(int i = 0; i < size; i++)
 	{
 		tab[i] = sortBase[i].time;
-		cout<<tab[i]<<endl;
 	}
 	
-	system("pause");
+	quickSort(tab, 0, size-1);
 	
-	//quickSort(tab, 0, size-1);
+	//rest
+	
+	delete [] tab;
 }
 
 void error()
