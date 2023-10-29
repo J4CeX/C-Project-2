@@ -24,7 +24,7 @@ struct sort
 {
 	int id;
 	string type;
-	string time;
+	double time;
 };
 
 void mergeSort(int *,int, int, int *);
@@ -39,9 +39,11 @@ void show(vector<data> &, vector<sort> &);
 void showData(vector<data> &, int);
 void showSort(vector<sort> &, int, int);
 void generateData();
+void generateSort();
 int convertStringToInt(string);
 void addData(vector<data> &);
 void sortData(vector<data> &, vector<sort> &);
+void showRankingList(vector<sort> &);
 void error();
 
 int main()
@@ -83,7 +85,7 @@ int main()
 				sortData(dataBase, sortBase);
 				break;
 			case 4:
-				
+				showRankingList(sortBase);
 				break;
 			default:
 				system("CLS");
@@ -169,6 +171,15 @@ void setSort(vector<sort> &sortBase)
 	ifstream file;
 	file.open("sort.txt");
 	
+	if(!file.good())
+	{
+		file.close();
+		
+		generateSort();
+		
+		file.open("sort.txt");
+	}
+	
 	while(!file.eof())
 	{
 		getline(file, line);
@@ -184,7 +195,7 @@ void setSort(vector<sort> &sortBase)
 			getline(file, line);
 			newSort.type = line;
 			getline(file, line);
-			newSort.time = line;
+			newSort.time = stod(line);
 			sortBase.push_back(newSort);
 		}
 	}
@@ -281,18 +292,22 @@ void generateData()
 	for(int i = 1; i <= 5; i++)
 	{
 		file<<"{"<<endl;
-		int size = rand()%100+901;
+		int size = rand()%1000+9001;
 		for(int index = 0; index < size; index++)
 		{
-			file<<rand()%101<<endl;
+			file<<rand()%1000<<endl;
 		}
 		file<<"}"<<endl;
 	}
 	
 	file.close();
-	
+}
+
+void generateSort()
+{
+	ofstream file;
 	file.open("sort.txt");
-	file.close(); 
+	file.close();
 }
 
 int convertStringToInt(string text)
@@ -443,21 +458,15 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 	cout<<"=============="<<endl
 		<<"Panel sortowan"<<endl
 		<<"=============="<<endl;
-
+		
 	auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
 	auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+	
 	if(seconds >= 1)
-	{
-		newSort.time = to_string(seconds);
-		newSort.time += " sekund";
 		cout<<"Czas sortowania "<<newSort.type<<": "<<seconds<<" sekund"<<endl;
-	}
-	else
-	{
-		newSort.time = to_string(miliseconds);
-		newSort.time += " milisekund";
+	else	
 		cout<<"Czas sortowania "<<newSort.type<<": "<<miliseconds<<" milisekund"<<endl;
-	}
+	newSort.time = double(seconds);
 
 	sortBase.push_back(newSort);
 	
@@ -542,6 +551,22 @@ void quickSort(int *tab, int left, int right)
 
 void bucketSort(int *tab, int size)
 {
+	int min = 0;
+	for(int i = 0; i < size; i++)
+	{
+		if(tab[i] < min)
+			min = tab[i];
+	}
+	int neg = (min*-1);
+	
+	if(neg != 0)
+	{
+		for(int i = 0; i < size; i++)
+		{
+			tab[i] += neg;
+		}
+	}
+	
 	int max = 0;
 	for(int i = 0; i < size; i++)
 	{
@@ -567,7 +592,7 @@ void bucketSort(int *tab, int size)
 		{
 			for(int j = 0; j < buckets[i]; j++)
 			{
-				tab[index] = i;
+				tab[index] = i - neg;
 				index++;
 			}
 		}
@@ -609,6 +634,22 @@ void insertSort(int *tab, int size)
 		pivot++;
 	}
 	while(pivot < size);
+}
+
+void showRankingList(vector<sort> &sortBase)
+{
+	int size = sortBase.size();
+	double tab[size];
+	
+	for(int i = 0; i < size; i++)
+	{
+		tab[i] = sortBase[i].time;
+		cout<<tab[i]<<endl;
+	}
+	
+	system("pause");
+	
+	//quickSort(tab, 0, size-1);
 }
 
 void error()
