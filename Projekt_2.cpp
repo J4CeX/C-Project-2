@@ -18,7 +18,7 @@ struct data
 {
 	int id;
 	int size;
-	vector<int> numbers;	
+	vector<int> numbers;
 };
 
 struct sort
@@ -45,6 +45,7 @@ int convertStringToInt(string);
 void addData(vector<data> &);
 void sortData(vector<data> &, vector<sort> &);
 void showRankingList(vector<sort> &);
+void quickSortRankingList(double *, int, int);
 void error();
 
 int main()
@@ -57,6 +58,7 @@ int main()
 	{
 		setData(dataBase);
 		setSort(sortBase);
+		
 		system("CLS");
 		cout<<"=============================="<<endl
 			<<"Witaj w kalkulatorze sortowan!"<<endl
@@ -155,7 +157,6 @@ void setData(vector<data> &dataBase)
 				size++;
 				newData.numbers.push_back(convertStringToInt(line));
 				getline(file, line);
-				if(line == "}") size++;
 			}
 			newData.size = size;
 			dataBase.push_back(newData);
@@ -237,7 +238,7 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 				end = true;
 				break;
 			case 1:
-				showData(dataBase, index);
+				showData(dataBase, index-1);
 				break;	
 			case 2:
 				showSort(sortBase, index, index-1);
@@ -293,10 +294,10 @@ void generateData()
 	for(int i = 1; i <= 5; i++)
 	{
 		file<<"{"<<endl;
-		int size = rand()%1000+9001;
+		int size = rand()%10000+95001;
 		for(int index = 0; index < size; index++)
 		{
-			file<<rand()%1000<<endl;
+			file<<rand()%10000+1000000<<endl;
 		}
 		file<<"}"<<endl;
 	}
@@ -650,11 +651,50 @@ void showRankingList(vector<sort> &sortBase)
 		tab[i] = sortBase[i].time;
 	}
 	
-	quickSort(tab, 0, size-1);
+	quickSortRankingList(tab, 0, size-1);
 	
-	//rest
+	cout<<"============================"<<endl
+		<<"Wyswietlam ranking sortowan"<<endl
+		<<"============================"<<endl;
+	
+	for(int i = 0; i < size; i++)
+	{
+		for(int j = 0; j < size; j++)
+		{
+			if(tab[i] == sortBase[j].time)
+			{
+				cout<<i+1<<". "<<"Czas: "<<sortBase[j].time<<", typ: "<<sortBase[j].type<<endl;
+			}
+		}
+	}
+	
+	system("pause");
 	
 	delete [] tab;
+}
+
+void quickSortRankingList(double *tab, int left, int right)
+{
+	int i = left;
+	int j = right;
+	double v = tab[(left+right)/2];
+	double x;
+	do
+	{
+		while(tab[i] < v) i++;
+		while(tab[j] > v) j--;
+		if(i <= j)
+		{
+			x = tab[i];
+			tab[i] = tab[j];
+			tab[j] = x;
+			i++;
+			j--;
+		}
+	}
+	while(i <= j);
+	if(i < right) quickSortRankingList(tab, i, right);
+	if(j > left) quickSortRankingList(tab, left, j);
 }
 
 void error()
