@@ -207,45 +207,54 @@ void setSort(vector<sort> &sortBase)
 
 void show(vector<data> &dataBase, vector<sort> &sortBase)
 {
-	int index, option;
+	int index = -1, option = -1;
 	bool end = false;
-	system("CLS");
-	cout<<"===================="<<endl
-		<<"Wyswietlanie zestawu"<<endl
-		<<"===================="<<endl;
-	cout<<"Wybierz zestaw:"<<endl;
-	for(int i = 1; i <= dataBase.size(); i++)
-	{
-		cout<<"Nr "<<i<<"."<<endl;
-	}
-	cout<<"-> "; cin>>index;
-	
-	while(!end)
+	while(index != 0)
 	{
 		system("CLS");
 		cout<<"===================="<<endl
 			<<"Wyswietlanie zestawu"<<endl
 			<<"===================="<<endl;
-		cout<<"Zestaw nr "<<index<<", wyswietl: "<<endl
-			<<"1. Dane"<<endl
-			<<"2. Wyniki sortowan"<<endl
-			<<"0. Powrot do menu"<<endl;
-		cout<<"-> "; cin>>option;
-		
-		switch(option)
+		cout<<"Wybierz zestaw:"<<endl;
+		for(int i = 1; i <= dataBase.size(); i++)
 		{
-			case 0:
-				end = true;
-				break;
-			case 1:
-				showData(dataBase, index-1);
-				break;	
-			case 2:
-				showSort(sortBase, index, index-1);
-				break;
-			default:
-				error();
-				continue;
+			cout<<i<<". Zestaw nr "<<i<<"."<<endl;
+		}
+		cout<<"0. Powrot"<<endl;
+		cout<<"-> "; cin>>index;
+		if(index < 0 || index > dataBase.size())
+		{
+			error();
+			continue;
+		}
+		if(index == 0)
+			continue;
+		while(option != 0)
+		{
+			system("CLS");
+			cout<<"===================="<<endl
+				<<"Wyswietlanie zestawu"<<endl
+				<<"===================="<<endl;
+			cout<<"Zestaw nr "<<index<<", wyswietl: "<<endl
+				<<"1. Dane"<<endl
+				<<"2. Wyniki sortowan"<<endl
+				<<"0. Powrot"<<endl;
+			cout<<"-> "; cin>>option;
+			
+			switch(option)
+			{
+				case 0:
+					continue;
+				case 1:
+					showData(dataBase, index-1);
+					break;	
+				case 2:
+					showSort(sortBase, index, index-1);
+					break;
+				default:
+					error();
+					continue;
+			}
 		}
 	}
 }
@@ -276,7 +285,12 @@ void showSort(vector<sort> &sortBase, int index, int id)
 	{
 		if(id == sortBase[i].id)
 		{
-			cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<sortBase[i].time<<endl;
+			double seconds = sortBase[i].time;
+			double miliseconds = sortBase[i].time*pow(10, 3);	
+			if(seconds >= 1)
+				cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<seconds<<" sekund"<<endl;
+			else 
+				cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<miliseconds<<" milisekund"<<endl;
 			n++;
 		}
 	}
@@ -366,121 +380,146 @@ void addData(vector<data> &dataBase)
 
 void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 {
-	int index;
-	int option;
+	int index = -1, option = -1;
 	sort newSort;
 	ofstream file;
 	file.open("sort.txt", ios::app);
-	
-	system("CLS");
-	cout<<"=============="<<endl
-		<<"Panel sortowan"<<endl
-		<<"=============="<<endl;
-	cout<<"Wybierz zestaw:"<<endl;
-	for(int i = 1; i <= dataBase.size(); i++)
-	{
-		cout<<"Nr "<<i<<"."<<endl;
-	}
-	cout<<"-> "; cin>>index;
-	--index;
-	
-	newSort.id = index;
-	
-	system("CLS");
-	cout<<"=============="<<endl
-		<<"Panel sortowan"<<endl
-		<<"=============="<<endl;
-	cout<<"Wybierz rodzaj sortowania:"<<endl
-		<<"1. mergeSort"<<endl
-		<<"2. quickSort"<<endl
-		<<"3. bucketSort"<<endl
-		<<"4. bubbleSort"<<endl
-		<<"5. insertSort"<<endl
-		<<"-> "; cin>>option;
-	
-	Clock_val start, end;
-	
-	int size = dataBase[index].size;
-	int *tab = new int [size];
-	for(int i = 0; i < size; i++)
-	{
-		tab[i] = dataBase[index].numbers[i];
-	}
-	
-	switch(option)
-	{
-		case 1:
-		{
-			newSort.type = "mergeSort";
-			int *supTab = new int [size];
-			start = Clock::now();
-			mergeSort(tab, 0, size-1, supTab);
-			end = Clock::now();
-			delete [] supTab;
-			break;
-		}
-		case 2:
-		{
-			newSort.type = "quickSort";
-			start = Clock::now();
-			quickSort(tab, 0, size-1);
-			end = Clock::now();
-			break;
-		}
-		case 3:
-		{
-			newSort.type = "bucketSort";
-			start = Clock::now();
-			bucketSort(tab, size);
-			end = Clock::now();
-			break;
-		}
-		case 4:
-		{	
-			newSort.type = "bubbleSort";
-			start = Clock::now();
-			bubbleSort(tab, size);
-			end = Clock::now();
-			break;
-		}
-		case 5:
-		{
-			newSort.type = "insertSort";
-			start = Clock::now();
-			insertSort(tab, size);
-			end = Clock::now();
-			break;
-		}
-		default:
-			error();
-	}
-	
-	delete [] tab;
-	
-	system("CLS");
-	cout<<"=============="<<endl
-		<<"Panel sortowan"<<endl
-		<<"=============="<<endl;
-		
-	auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
-	auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-	
-	if(seconds >= 1)
-		cout<<"Czas sortowania "<<newSort.type<<": "<<seconds<<" sekund"<<endl;
-	else	
-		cout<<"Czas sortowania "<<newSort.type<<": "<<miliseconds<<" milisekund"<<endl;
-	newSort.time = double(seconds);
 
-	sortBase.push_back(newSort);
-	
-	file<<"{"<<endl
-		<<newSort.id<<endl
-		<<newSort.type<<endl
-		<<newSort.time<<endl
-		<<"}"<<endl;
+	while(index != 0)
+	{
+		system("CLS");
+		cout<<"=============="<<endl
+			<<"Panel sortowan"<<endl
+			<<"=============="<<endl;
+		cout<<"Wybierz zestaw:"<<endl;
+		for(int i = 1; i <= dataBase.size(); i++)
+		{
+			cout<<"Nr "<<i<<"."<<endl;
+		}
+		cout<<"0. Powrot"<<endl;
+		cout<<"-> "; cin>>index;
+		if(index < 0 || index > dataBase.size())
+		{
+			error();
+			continue;
+		}
+		if(index == 0)
+			continue;
 		
+		--index;
+		
+		newSort.id = index;
+		
+		while(option != 0)
+		{
+			system("CLS");
+			cout<<"=============="<<endl
+				<<"Panel sortowan"<<endl
+				<<"=============="<<endl;
+			cout<<"Wybierz rodzaj sortowania:"<<endl
+				<<"1. mergeSort"<<endl
+				<<"2. quickSort"<<endl
+				<<"3. bucketSort"<<endl
+				<<"4. bubbleSort"<<endl
+				<<"5. insertSort"<<endl
+				<<"0. Powrot"<<endl
+				<<"-> "; cin>>option;
+			
+			if(option < 0 || option > 5)
+			{
+				error();
+				continue;
+			}
+			
+			Clock_val start, end;
+			
+			int size = dataBase[index].size;
+			int *tab = new int [size];
+			for(int i = 0; i < size; i++)
+			{
+				tab[i] = dataBase[index].numbers[i];
+			}
+			
+			switch(option)
+			{
+				case 0:
+				{
+					continue;
+				}
+				case 1:
+				{
+					newSort.type = "mergeSort";
+					int *supTab = new int [size];
+					start = Clock::now();
+					mergeSort(tab, 0, size-1, supTab);
+					end = Clock::now();
+					delete [] supTab;
+					break;
+				}
+				case 2:
+				{
+					newSort.type = "quickSort";
+					start = Clock::now();
+					quickSort(tab, 0, size-1);
+					end = Clock::now();
+					break;
+				}
+				case 3:
+				{
+					newSort.type = "bucketSort";
+					start = Clock::now();
+					bucketSort(tab, size);
+					end = Clock::now();
+					break;
+				}
+				case 4:
+				{	
+					newSort.type = "bubbleSort";
+					start = Clock::now();
+					bubbleSort(tab, size);
+					end = Clock::now();
+					break;
+				}
+				case 5:
+				{
+					newSort.type = "insertSort";
+					start = Clock::now();
+					insertSort(tab, size);
+					end = Clock::now();
+					break;
+				}
+				default:
+					error();
+			}
+			
+			delete [] tab;
+			
+			system("CLS");
+			cout<<"=============="<<endl
+				<<"Panel sortowan"<<endl
+				<<"=============="<<endl;
+				
+			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
+			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
+			
+			if(seconds >= 1)
+				cout<<"Czas sortowania "<<newSort.type<<": "<<seconds<<" sekund"<<endl;
+			else	
+				cout<<"Czas sortowania "<<newSort.type<<": "<<miliseconds<<" milisekund"<<endl;
+			newSort.time = double(seconds);
+		
+			sortBase.push_back(newSort);
+			
+			file<<"{"<<endl
+				<<newSort.id<<endl
+				<<newSort.type<<endl
+				<<newSort.time<<endl
+				<<"}"<<endl;
+				
+			system("pause");
+		}
+	}
 	file.close();
-	system("pause");
 }
 
 void mergeSort(int *tab, int leftIndex, int rightIndex, int *supTab)
@@ -663,7 +702,12 @@ void showRankingList(vector<sort> &sortBase)
 		{
 			if(tab[i] == sortBase[j].time)
 			{
-				cout<<i+1<<". "<<"Czas: "<<sortBase[j].time<<", typ: "<<sortBase[j].type<<endl;
+				double seconds = sortBase[j].time;
+				double miliseconds = sortBase[j].time*pow(10, 3);	
+				if(seconds >= 1)
+					cout<<i+1<<". "<<"Czas: "<<seconds<<" sekund, typ: "<<sortBase[j].type<<endl;
+				else 
+					cout<<i+1<<". "<<"Czas: "<<miliseconds<<" milisekund, typ: "<<sortBase[j].type<<endl;
 			}
 		}
 	}
