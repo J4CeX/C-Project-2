@@ -7,7 +7,6 @@
 #include<vector>
 #include<cmath>
 #include<iomanip>
-#include<cstdio>
 
 using namespace std;
 
@@ -23,6 +22,7 @@ struct data
 
 struct sort
 {
+	int sortId;
 	int id;
 	string type;
 	double time;
@@ -193,6 +193,8 @@ void setSort(vector<sort> &sortBase)
 		{
 			sort newSort;
 			getline(file, line);
+			newSort.sortId = convertStringToInt(line);
+			getline(file, line);
 			newSort.id = convertStringToInt(line);
 			getline(file, line);
 			newSort.type = line;
@@ -207,7 +209,7 @@ void setSort(vector<sort> &sortBase)
 
 void show(vector<data> &dataBase, vector<sort> &sortBase)
 {
-	int index = -1, option = -1;
+	int index = -1;
 	bool end = false;
 	while(index != 0)
 	{
@@ -229,6 +231,8 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 		}
 		if(index == 0)
 			continue;
+		
+		int option = -1;
 		while(option != 0)
 		{
 			system("CLS");
@@ -380,7 +384,7 @@ void addData(vector<data> &dataBase)
 
 void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 {
-	int index = -1, option = -1;
+	int index = -1;
 	sort newSort;
 	ofstream file;
 	file.open("sort.txt", ios::app);
@@ -407,9 +411,10 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 			continue;
 		
 		--index;
-		
+			
 		newSort.id = index;
 		
+		int option = -1;
 		while(option != 0)
 		{
 			system("CLS");
@@ -492,6 +497,11 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 					error();
 			}
 			
+			if(sortBase.size() == 0)
+				newSort.sortId = 0;
+			else
+				newSort.sortId = sortBase.size();
+			
 			delete [] tab;
 			
 			system("CLS");
@@ -511,6 +521,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 			sortBase.push_back(newSort);
 			
 			file<<"{"<<endl
+				<<newSort.sortId<<endl
 				<<newSort.id<<endl
 				<<newSort.type<<endl
 				<<newSort.time<<endl
@@ -683,8 +694,14 @@ void insertSort(int *tab, int size)
 void showRankingList(vector<sort> &sortBase)
 {
 	int size = sortBase.size();
+	int *sortIdCheck = new int [size];
 	double *tab = new double [size];
 	
+	for(int i = 0; i < size; i++)
+	{
+		sortIdCheck[i] = true; 
+	}
+
 	for(int i = 0; i < size; i++)
 	{
 		tab[i] = sortBase[i].time;
@@ -692,29 +709,40 @@ void showRankingList(vector<sort> &sortBase)
 	
 	quickSortRankingList(tab, 0, size-1);
 	
+	system("CLS");
 	cout<<"============================"<<endl
 		<<"Wyswietlam ranking sortowan"<<endl
 		<<"============================"<<endl;
 	
-	for(int i = 0; i < size; i++)
+	if(size > 0)
 	{
-		for(int j = 0; j < size; j++)
+		for(int i = 0; i < size; i++)
 		{
-			if(tab[i] == sortBase[j].time)
+			for(int j = 0; j < size; j++)
 			{
-				double seconds = sortBase[j].time;
-				double miliseconds = sortBase[j].time*pow(10, 3);	
-				if(seconds >= 1)
-					cout<<i+1<<". "<<"Czas: "<<seconds<<" sekund, typ: "<<sortBase[j].type<<endl;
-				else 
-					cout<<i+1<<". "<<"Czas: "<<miliseconds<<" milisekund, typ: "<<sortBase[j].type<<endl;
+				if(tab[i] == sortBase[j].time && sortIdCheck[j] == true)
+				{
+					double seconds = sortBase[j].time;
+					double miliseconds = sortBase[j].time*pow(10, 3);	
+					if(seconds >= 1)
+						cout<<i+1<<". "<<"Czas: "<<seconds<<" sekund, typ: "<<sortBase[j].type<<", zestaw nr. "<<sortBase[j].id+1<<endl;
+					else 
+						cout<<i+1<<". "<<"Czas: "<<miliseconds<<" milisekund, typ: "<<sortBase[j].type<<", zestaw nr. "<<sortBase[j].id+1<<endl;
+					sortIdCheck[j] = false;
+					break;
+				}
 			}
-		}
+		}	
+	}
+	else
+	{
+		cout<<"Brak sortowan"<<endl;
 	}
 	
 	system("pause");
 	
 	delete [] tab;
+	delete [] sortIdCheck;
 }
 
 void quickSortRankingList(double *tab, int left, int right)
