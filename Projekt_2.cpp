@@ -91,11 +91,7 @@ int main()
 				showRankingList(sortBase);
 				break;
 			default:
-				system("CLS");
-				cout<<"===================="<<endl
-					<<"\aNie ma takiej opcji!"<<endl
-					<<"===================="<<endl;
-				system("pause");
+				error();
 				continue;
 		}
 	}
