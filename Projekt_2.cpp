@@ -24,6 +24,7 @@ struct sort
 {
 	int sortId;
 	int id;
+	int size;
 	string type;
 	double time;
 };
@@ -39,7 +40,7 @@ void setSort(vector<sort> &);
 void show(vector<data> &, vector<sort> &);
 void showData(vector<data> &, int);
 void showSort(vector<sort> &, int, int);
-void generateData();
+void generateData(int n, int maxValue = 0, int nSize = 0);
 void generateSort();
 int convertStringToInt(string);
 void addData(vector<data> &);
@@ -52,13 +53,13 @@ int main()
 {
 	vector<data> dataBase;
 	vector<sort> sortBase;
-	
-	int option;	
+
+	int option;
 	while(true)
 	{
 		setData(dataBase);
 		setSort(sortBase);
-		
+
 		system("CLS");
 		cout<<"=============================="<<endl
 			<<"Witaj w kalkulatorze sortowan!"<<endl
@@ -95,7 +96,7 @@ int main()
 				continue;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -104,34 +105,34 @@ void setData(vector<data> &dataBase)
 	dataBase.clear();
 	ifstream file;
 	file.open("data.txt");
-	
+
 	if(!file.good())
 	{
 		file.close();
-			
+
 		system("CLS");
 		cout<<"============"<<endl
 			<<"Brak danych!"<<endl
 			<<"============"<<endl;
-		sleep(2);
-		
+		_sleep(2000);
+
 		system("CLS");
 		cout<<"================"<<endl
 			<<"Generuje dane..."<<endl
 			<<"================"<<endl;
-		
-		generateData();
-		sleep(2);
-		
+
+		generateData(5);
+		_sleep(2000);
+
 		system("CLS");
 		cout<<"============================"<<endl
 			<<"Pomyslnie wygenerowano dane"<<endl
 			<<"============================"<<endl;
-		sleep(2);
-		
+		_sleep(2000);
+
 		file.open("data.txt");
 	}
-	
+
 	string line;
 
 	while(!file.eof())
@@ -144,12 +145,12 @@ void setData(vector<data> &dataBase)
 		}
 		if(line == "{");
 		{
-			data newData; 
+			data newData;
 			newData.id = id++;
 			int size = 0;
 			getline(file, line);
 			while(line != "}")
-			{	
+			{
 				size++;
 				newData.numbers.push_back(convertStringToInt(line));
 				getline(file, line);
@@ -158,7 +159,7 @@ void setData(vector<data> &dataBase)
 			dataBase.push_back(newData);
 		}
 	}
-	
+
 	file.close();
 }
 
@@ -168,16 +169,16 @@ void setSort(vector<sort> &sortBase)
 	string line;
 	ifstream file;
 	file.open("sort.txt");
-	
+
 	if(!file.good())
 	{
 		file.close();
-		
+
 		generateSort();
-		
+
 		file.open("sort.txt");
 	}
-	
+
 	while(!file.eof())
 	{
 		getline(file, line);
@@ -193,13 +194,15 @@ void setSort(vector<sort> &sortBase)
 			getline(file, line);
 			newSort.id = convertStringToInt(line);
 			getline(file, line);
+			newSort.size = convertStringToInt(line);
+			getline(file, line);
 			newSort.type = line;
 			getline(file, line);
-			newSort.time = stod(line);	
-			sortBase.push_back(newSort);	
+			newSort.time = stod(line);
+			sortBase.push_back(newSort);
 		}
 	}
-	
+
 	file.close();
 }
 
@@ -227,7 +230,7 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 		}
 		if(index == 0)
 			continue;
-		
+
 		int option = -1;
 		while(option != 0)
 		{
@@ -240,14 +243,14 @@ void show(vector<data> &dataBase, vector<sort> &sortBase)
 				<<"2. Wyniki sortowan"<<endl
 				<<"0. Powrot"<<endl;
 			cout<<"-> "; cin>>option;
-			
+
 			switch(option)
 			{
 				case 0:
 					continue;
 				case 1:
 					showData(dataBase, index-1);
-					break;	
+					break;
 				case 2:
 					showSort(sortBase, index, index-1);
 					break;
@@ -276,6 +279,7 @@ void showData(vector<data> &dataBase, int index)
 void showSort(vector<sort> &sortBase, int index, int id)
 {
 	int n = 0;
+	vector<sort> tempBase;
 	system("CLS");
 	cout<<"===================="<<endl
 		<<"Wyswietlanie zestawu"<<endl
@@ -284,38 +288,74 @@ void showSort(vector<sort> &sortBase, int index, int id)
 	for(int i = 0; i < sortBase.size(); i++)
 	{
 		if(id == sortBase[i].id)
-		{
-			double seconds = sortBase[i].time;
-			double miliseconds = sortBase[i].time*pow(10, 3);	
-			if(seconds >= 1)
-				cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<seconds<<" sekund"<<endl;
-			else 
-				cout<<"Typ sortowania: "<<sortBase[i].type<<", czas sortowania: "<<miliseconds<<" milisekund"<<endl;
-			n++;
-		}
+        {
+            n++;
+            tempBase.push_back(sortBase[i]);
+        }
 	}
 	if(n == 0)
 		cout<<"Brak sortowan"<<endl;
+    else
+    {
+        double results[n];
+        for(int i = 0; i < n; i++)
+        {
+            results[i] = tempBase[i].time;
+        }
+        quickSortRankingList(results, 0, n-1);
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(tempBase[j].time == results[i])
+                {
+                    double seconds = tempBase[j].time;
+                    double miliseconds = tempBase[j].time*pow(10, 3);
+                    if(seconds >= 1)
+                        cout<<"Typ sortowania: "<<tempBase[j].type<<", czas sortowania: "<<seconds<<" sekund"<<endl;
+                    else
+                        cout<<"Typ sortowania: "<<tempBase[j].type<<", czas sortowania: "<<miliseconds<<" milisekund"<<endl;
+                }
+            }
+        }
+
+    }
 	system("pause");
 }
 
-void generateData()
+void generateData(int n, int maxValue, int nSize)
 {
 	ofstream file;
-	file.open("data.txt");
+	file.open("data.txt", ios::app);
 	srand(time(NULL));
-	
-	for(int i = 1; i <= 5; i++)
+
+	for(int i = 1; i <= n; i++)
 	{
 		file<<"{"<<endl;
-		int size = rand()%10000+95001;
+		int size;
+		if(nSize == 0)
+        {
+            size = rand()%10000+95001;
+        }
+        else
+        {
+            size = nSize;
+        }
+
 		for(int index = 0; index < size; index++)
 		{
-			file<<rand()%10000+1000000<<endl;
+		    if(maxValue == 0)
+            {
+                file<<rand()%1000000<<endl;
+            }
+            else
+            {
+                file<<rand()%maxValue<<endl;
+            }
 		}
 		file<<"}"<<endl;
 	}
-	
+
 	file.close();
 }
 
@@ -331,50 +371,41 @@ int convertStringToInt(string text)
 	int length = text.length();
 	int result = 0;
 	int power = 0;
-	
+
 	for(int i = length-1; i >= 0; i--)
 	{
 		result += (int(text[i]) - 48) * pow(10, power);
 		power++;
 	}
-	
+
 	return result;
 }
 
 void addData(vector<data> &dataBase)
 {
 	int n;
+	int maxValue, nSize;
 	data newData;
 	ofstream file;
 	file.open("data.txt", ios::app);
-	
+
 	system("CLS");
 	cout<<"========================"<<endl
 		<<"Dodawanie zestawu danych"<<endl
 		<<"========================"<<endl;
-	cout<<"Wprowadz liczby\n(znak konczy wprowadzanie):"<<endl;
-	while(cin>>n)
-	{
-		newData.numbers.push_back(n);
-	}
-	cin.clear();
-	while(cin.get() != '\n')
-		continue;
-	dataBase.push_back(newData);
-	
-	file<<endl<<"{"<<endl;
-	for(int index = 0; index < newData.numbers.size(); index++)
-	{
-		file<<newData.numbers[index]<<endl;
-	}
-	file<<"}"<<endl;
-		
+    cout<<"Podaj maksymalna wartosc dla zestawu: ";
+    cin>>maxValue;
+    cout<<"Podaj ilosc danych dla zestawu: ";
+    cin>>nSize;
+    generateData(1, maxValue, nSize);
+    _sleep(2000);
+
 	system("CLS");
 	cout<<"============================"<<endl
 		<<"Pomyslnie dodano nowy zestaw"<<endl
 		<<"============================"<<endl;
-	sleep(2);
-	
+	_sleep(2000);
+
 	file.close();
 }
 
@@ -405,11 +436,11 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 		}
 		if(index == 0)
 			continue;
-		
+
 		--index;
-			
+
 		newSort.id = index;
-		
+
 		int option = -1;
 		while(option != 0)
 		{
@@ -425,22 +456,23 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 				<<"5. insertSort"<<endl
 				<<"0. Powrot"<<endl
 				<<"-> "; cin>>option;
-			
+
 			if(option < 0 || option > 5)
 			{
 				error();
 				continue;
 			}
-			
+
 			Clock_val start, end;
-			
+
 			int size = dataBase[index].size;
+			newSort.size = size;
 			int *tab = new int [size];
 			for(int i = 0; i < size; i++)
 			{
 				tab[i] = dataBase[index].numbers[i];
 			}
-			
+
 			switch(option)
 			{
 				case 0:
@@ -474,7 +506,7 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 					break;
 				}
 				case 4:
-				{	
+				{
 					newSort.type = "bubbleSort";
 					start = Clock::now();
 					bubbleSort(tab, size);
@@ -492,37 +524,38 @@ void sortData(vector<data> &dataBase, vector<sort> &sortBase)
 				default:
 					error();
 			}
-			
+
 			if(sortBase.size() == 0)
 				newSort.sortId = 0;
 			else
 				newSort.sortId = sortBase.size();
-			
+
 			delete [] tab;
-			
+
 			system("CLS");
 			cout<<"=============="<<endl
 				<<"Panel sortowan"<<endl
 				<<"=============="<<endl;
-				
+
 			auto miliseconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -6);
 			auto seconds = (std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())*pow(10, -9);
-			
+
 			if(seconds >= 1)
 				cout<<"Czas sortowania "<<newSort.type<<": "<<seconds<<" sekund"<<endl;
-			else	
+			else
 				cout<<"Czas sortowania "<<newSort.type<<": "<<miliseconds<<" milisekund"<<endl;
 			newSort.time = double(seconds);
-		
+
 			sortBase.push_back(newSort);
-			
+
 			file<<"{"<<endl
 				<<newSort.sortId<<endl
 				<<newSort.id<<endl
+				<<newSort.size<<endl
 				<<newSort.type<<endl
 				<<newSort.time<<endl
 				<<"}"<<endl;
-				
+
 			system("pause");
 		}
 	}
@@ -546,11 +579,11 @@ void merge(int *tab, int leftIndex, int pivot, int rightIndex, int *supTab)
 	{
 		supTab[i] = tab[i];
 	}
-	
+
 	int leftSideIndex = leftIndex;
 	int rightSideIndex = pivot + 1;
 	int index = leftIndex;
-	
+
 	while(leftSideIndex <= pivot && rightSideIndex <= rightIndex)
 	{
 		if(supTab[leftSideIndex] <= supTab[rightSideIndex])
@@ -565,7 +598,7 @@ void merge(int *tab, int leftIndex, int pivot, int rightIndex, int *supTab)
 		}
 		index++;
 	}
-	
+
 	while(leftSideIndex <= pivot)
 	{
 		tab[index] = supTab[leftSideIndex];
@@ -607,7 +640,7 @@ void bucketSort(int *tab, int size)
 			min = tab[i];
 	}
 	int neg = (min*-1);
-	
+
 	if(neg != 0)
 	{
 		for(int i = 0; i < size; i++)
@@ -615,25 +648,25 @@ void bucketSort(int *tab, int size)
 			tab[i] += neg;
 		}
 	}
-	
+
 	int max = 0;
 	for(int i = 0; i < size; i++)
 	{
 		if(tab[i] > max)
 			max = tab[i];
 	}
-	
+
 	int *buckets = new int [max+1];
-	
+
 	for(int i = 0; i <= max; i++)
 		buckets[i] = 0;
-	                
+
 	for(int i = 0; i < size; i++)
 		buckets[tab[i]]++;
-	
+
 	for(int i = 0; i < size; i++)
 		tab[i] = 0;
-	
+
 	int index = 0;
 	for(int i = 0; i <= max; i++)
 	{
@@ -646,7 +679,7 @@ void bucketSort(int *tab, int size)
 			}
 		}
 	}
-	
+
 	delete [] buckets;
 }
 
@@ -670,7 +703,7 @@ void insertSort(int *tab, int size)
 {
 	int pivot = 1;
 	int x;
-	
+
 	do
 	{
 		if(tab[pivot] < tab[pivot-1])
@@ -692,24 +725,24 @@ void showRankingList(vector<sort> &sortBase)
 	int size = sortBase.size();
 	int *sortIdCheck = new int [size];
 	double *tab = new double [size];
-	
+
 	for(int i = 0; i < size; i++)
 	{
-		sortIdCheck[i] = true; 
+		sortIdCheck[i] = true;
 	}
 
 	for(int i = 0; i < size; i++)
 	{
 		tab[i] = sortBase[i].time;
 	}
-	
+
 	quickSortRankingList(tab, 0, size-1);
-	
+
 	system("CLS");
 	cout<<"============================"<<endl
 		<<"Wyswietlam ranking sortowan"<<endl
 		<<"============================"<<endl;
-	
+
 	if(size > 0)
 	{
 		for(int i = 0; i < size; i++)
@@ -719,24 +752,24 @@ void showRankingList(vector<sort> &sortBase)
 				if(tab[i] == sortBase[j].time && sortIdCheck[j] == true)
 				{
 					double seconds = sortBase[j].time;
-					double miliseconds = sortBase[j].time*pow(10, 3);	
+					double miliseconds = sortBase[j].time*pow(10, 3);
 					if(seconds >= 1)
-						cout<<i+1<<". "<<"Czas: "<<seconds<<" sekund, typ: "<<sortBase[j].type<<", zestaw nr. "<<sortBase[j].id+1<<endl;
-					else 
-						cout<<i+1<<". "<<"Czas: "<<miliseconds<<" milisekund, typ: "<<sortBase[j].type<<", zestaw nr. "<<sortBase[j].id+1<<endl;
+						cout<<i+1<<". "<<"Czas: "<<seconds<<" sekund, typ: "<<sortBase[j].type<<", ilosc danych: "<<sortBase[j].size<<", zestaw nr. "<<sortBase[j].id+1<<endl;
+					else
+						cout<<i+1<<". "<<"Czas: "<<miliseconds<<" milisekund, typ: "<<sortBase[j].type<<", ilosc danych: "<<sortBase[j].size<<", zestaw nr. "<<sortBase[j].id+1<<endl;
 					sortIdCheck[j] = false;
 					break;
 				}
 			}
-		}	
+		}
 	}
 	else
 	{
 		cout<<"Brak sortowan"<<endl;
 	}
-	
+
 	system("pause");
-	
+
 	delete [] tab;
 	delete [] sortIdCheck;
 }
